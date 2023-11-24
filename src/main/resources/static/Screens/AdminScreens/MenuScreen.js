@@ -5,12 +5,21 @@ import MenuComponent from "../../Components/MenuComponent";
 import Spacer from "../../Components/Spacer";
 import {BACKGROUND_COLOR, DARK_GREEN} from "../../Help_Box/Colors";
 import {useContext, useEffect, useState} from "react";
+import {MyContext} from "../../Context/MyContext";
+import {
+    fetchDataGetLimitedStock,
+    fetchDataGetProducts, fetchDataGetSortedNameProducts, fetchDataGetSortedPriceProducts,
+    fetchDataGetSortedPriceStock,
+    fetchDataGetSortedQuantityStock
+} from "../../Help_Box/API_calls";
+import {stock_styles} from "../../Style/Admin_style/Stock_styles";
 import {Dropdown} from "react-native-element-dropdown";
 
 
 export default function MenuScreen({navigation}) {
     const [curentLine, setCurentLine] = useState(1);
 
+    const {productData, setProductData} = useContext(MyContext);
 
     const [isFocus, setIsFocus] = useState(false);
     const [filterSelected, setFilterSelected] = useState();
@@ -19,6 +28,30 @@ export default function MenuScreen({navigation}) {
         {label: "Name", value: '2'},
     ];
 
+    const renderDynamicProduct = () => {
+        return productData.map((item) => {
+            return (
+                <MenuComponent
+                    key={item.id}
+                    data={item}
+
+                    name={item.name}
+                    price={item.price}
+                    photoLink={item.photoLink}
+
+                    navigation={navigation}
+                />
+            );
+        });
+    };
+
+
+    useEffect(() => {
+        fetchDataGetProducts().then(respons => {
+            setProductData(respons)
+        })
+         //console.log(productData);
+    }, [])
 
     return (
         <View style={menu_styles.container}>
@@ -63,6 +96,12 @@ export default function MenuScreen({navigation}) {
                         // searchPlaceholder="Search..."
                         value={filterSelected}
 
+                        onChange={item => {
+
+                            setFilterSelected(item);
+                            setIsFocus(false);
+                        }}
+
                         onFocus={() => setIsFocus(true)}
                         onBlur={() => setIsFocus(false)}
                     />
@@ -70,21 +109,7 @@ export default function MenuScreen({navigation}) {
             </View>
 
             <ScrollView style={menu_styles.containerScrollView} contentContainerStyle={{alignItems: "center"}} >
-                <MenuComponent
-                    name={"Coffee"}
-                    price={10}
-                    photoLink={"https://neurosciencenews.com/files/2023/06/coffee-brain-caffeine-neuroscincces.jpg"}
-
-                    navigation={navigation}
-                />
-
-                <MenuComponent
-                    name={"Cookie"}
-                    price={10}
-                    photoLink={"https://img.buzzfeed.com/thumbnailer-prod-us-east-1/video-api/assets/62298.jpg?resize=1200:*"}
-
-                    navigation={navigation}
-                />
+                {renderDynamicProduct()}
             </ScrollView>
         </View>
     );

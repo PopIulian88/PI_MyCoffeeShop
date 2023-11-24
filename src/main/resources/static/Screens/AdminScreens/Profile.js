@@ -4,8 +4,47 @@ import {MaterialCommunityIcons, MaterialIcons, Octicons} from "@expo/vector-icon
 import {MY_RED} from "../../Help_Box/Colors";
 import Spacer from "../../Components/Spacer";
 import ProfitCard from "../../Components/ProfitCard";
+import {useContext, useEffect} from "react";
+import {MyContext} from "../../Context/MyContext";
+import {fetchDataGetProfit} from "../../Help_Box/API_calls";
 
 export default function Profile({navigation}) {
+
+    const {profitData, setProfitData} = useContext(MyContext);
+
+        useEffect(()=>{
+            fetchDataGetProfit().then(respons => {
+                setProfitData(respons);
+            })
+        },[])
+
+
+        // console.log(profitData[0]);
+
+    const renderDynamicProfit = () => {
+        return (profitData[0].historic.reverse()).map((item) => {
+            return (
+                <>
+                {
+                    (item > 0) ?
+                    <ProfitCard
+                        key={item.id}
+                        data={item}
+
+                        text={"Profit"}
+                        money={item}
+                    /> : <ProfitCard
+                        key={item.id}
+                        data={item}
+
+                        text={"Loss"}
+                        money={-item}
+                    />
+                }
+                </>
+            );
+        });
+    };
 
 
     return (
@@ -34,7 +73,7 @@ export default function Profile({navigation}) {
 
             <View style={profile_styles.containerUp}>
                 <View style={profile_styles.profitCircle}>
-                    <Text style={[profile_styles.moneyText, {fontWeight: "bold"}]}>$ 169</Text>
+                    <Text style={[profile_styles.moneyText, {fontWeight: "bold"}]}>$ {profitData[0].curentProfit.toFixed(2)}</Text>
                     <Spacer height={10}/>
                     <Text style={profile_styles.moneyText}>Profit</Text>
                 </View>
@@ -45,21 +84,7 @@ export default function Profile({navigation}) {
             </View>
 
             <ScrollView style={profile_styles.containerScrollView} contentContainerStyle={{alignItems: "center"}}>
-
-                <ProfitCard
-                    text={"Profit"}
-                    money={50}
-                />
-                <ProfitCard
-                    text={"Profit"}
-                    money={150}
-                />
-
-                <ProfitCard
-                text={"Loss"}
-                money={-31}
-            />
-
+                {renderDynamicProfit()}
             </ScrollView>
         </View>
     );

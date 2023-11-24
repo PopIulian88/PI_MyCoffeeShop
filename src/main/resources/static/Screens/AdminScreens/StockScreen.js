@@ -3,11 +3,21 @@ import {stock_styles} from "../../Style/Admin_style/Stock_styles";
 import {MaterialIcons} from "@expo/vector-icons";
 import StockComponent from "../../Components/StockComponent";
 import {useContext, useEffect, useState} from "react";
+import {MyContext} from "../../Context/MyContext";
+import {
+    fetchDataGetLimitedStock,
+    fetchDataGetProfit,
+    fetchDataGetSortedPriceStock, fetchDataGetSortedQuantityStock,
+    fetchDataGetStocks
+} from "../../Help_Box/API_calls";
 import {Dropdown} from "react-native-element-dropdown";
 import Spacer from "../../Components/Spacer";
 
 
 export default function StockScreen({navigation}) {
+
+    const {stocksData, setStocksData} = useContext(MyContext);
+    const {profitData, setProfitData} = useContext(MyContext);
 
     const [isFocus, setIsFocus] = useState(false);
     const [filterSelected, setFilterSelected] = useState();
@@ -18,6 +28,35 @@ export default function StockScreen({navigation}) {
     ];
 
 
+    const renderDynamicStock = () => {
+        return stocksData.map((item) => {
+            return (
+                <StockComponent
+                    key={item.id}
+                    data={item}
+
+                    name={item.name}
+                    price={item.price}
+                    amount={item.amount}
+                    unit={item.unit}
+                    quantity={item.quantity}
+                    navigation={navigation}
+                />
+            );
+        });
+    };
+
+
+    useEffect(() => {
+        fetchDataGetStocks().then(respons => {
+            setStocksData(respons)
+        })
+
+        fetchDataGetProfit().then(respons => {
+            setProfitData(respons)
+        })
+        // console.log(stocksData);
+    }, [])
 
     return (
         <View style={stock_styles.container}>
@@ -58,6 +97,10 @@ export default function StockScreen({navigation}) {
                         // searchPlaceholder="Search..."
                         value={filterSelected}
 
+                        onChange={item => {
+                            setFilterSelected(item);
+                            setIsFocus(false);
+                        }}
 
                         onFocus={() => setIsFocus(true)}
                         onBlur={() => setIsFocus(false)}
@@ -66,24 +109,9 @@ export default function StockScreen({navigation}) {
             </View>
 
 
-            <ScrollView style={stock_styles.containerScrollView} contentContainerStyle={{alignItems: "center"}}>
-                <StockComponent
-                    name={"Coffee beans"}
-                    price={5}
-                    amount={1}
-                    unit={"kg"}
-                    quantity={15}
-                    navigation={navigation}
-                />
-
-                <StockComponent
-                    name={"Milk"}
-                    price={3}
-                    amount={1}
-                    unit={"liter"}
-                    quantity={16}
-                    navigation={navigation}
-                />
+            <ScrollView style={stock_styles.containerScrollView} contentContainerStyle={{alignItems: "center"}}
+            >
+                {renderDynamicStock()}
             </ScrollView>
         </View>
     );

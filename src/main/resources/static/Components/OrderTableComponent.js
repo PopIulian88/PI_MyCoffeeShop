@@ -4,12 +4,22 @@ import {orderTableComponent_styles} from "../Style/Components_style/OrderTableCo
 import {table_styles} from "../Style/Store_style/Table_styles";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {useContext, useState} from "react";
+import {MY_IP} from "../Help_Box/IP_help";
+import {MyContext} from "../Context/MyContext";
 
-export default function OrderTableComponent({data, name="Name", price=0, navigation,
-                                          photoLink="https://img.freepik.com/free-vector/coffee-love-foam-with-beans-cartoon-icon-illustration_138676-2575.jpg?w=2000",
-                                                setOrderProducts, OrderProducts, setOrderQuantiti  }) {
+export default function OrderTableComponent({
+                                                data, name = "Name", price = 0, navigation,
+                                                photoLink = "https://img.freepik.com/free-vector/coffee-love-foam-with-beans-cartoon-icon-illustration_138676-2575.jpg?w=2000",
+                                                setOrderProducts, OrderProducts, setOrderQuantiti
+                                            }) {
 
     const [counter, setCounter] = useState(0);
+
+
+    const {tableToEdit, setTableToEdit} = useContext(MyContext);
+
+    // setOrderProducts(tableToEdit.cart);
+    // setOrderQuantiti(tableToEdit.products_quantiti);
 
     return (
         <>
@@ -51,7 +61,7 @@ export default function OrderTableComponent({data, name="Name", price=0, navigat
                         <Spacer height={5}/>
 
                         <TouchableOpacity style={orderTableComponent_styles.minusButton} onPress={() => {
-                            if(counter > 0) {
+                            if (counter > 0) {
                                 setCounter(counter - 1);
                             }
                         }}>
@@ -66,10 +76,14 @@ export default function OrderTableComponent({data, name="Name", price=0, navigat
 
                     <TouchableOpacity style={orderTableComponent_styles.addToCartButton} onPress={() => {
 
-                        if(counter > 0) {
+                        if (counter > 0) {
 
-                            setCounter(0)
+                            if (counter > 0) {
+                                setOrderProducts(prevState => [...prevState, data]);
+                                setOrderQuantiti(prevState => [...prevState, counter]);
 
+                                setCounter(0);
+                            }
                         }
                     }}>
                         <Text style={orderTableComponent_styles.addToCartText}>Add to cart</Text>

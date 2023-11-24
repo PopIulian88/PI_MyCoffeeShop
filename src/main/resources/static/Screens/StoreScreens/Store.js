@@ -3,11 +3,28 @@ import Shop from "./Shop";
 import Table from "./Table";
 import FinishOrder from "./FinishOrder";
 import Checkout from "./Checkout";
+import {useContext, useEffect} from "react";
+import {MyContext} from "../../Context/MyContext";
+import {fetchDataGetStoreTable, fetchDatainitStoreTables} from "../../Help_Box/API_calls";
 
 
 const Stack = createNativeStackNavigator()
 
 export default function Store() {
+
+    const {tablesData, setTablesData} = useContext(MyContext)
+
+
+    useEffect(() => {
+        fetchDatainitStoreTables().then(response => {
+
+            fetchDataGetStoreTable().then(response => {
+                setTablesData(response);
+            })
+
+        }).catch(e => console.log(e));
+
+    }, [])
 
     return (
         <Stack.Navigator initialRouteName={"Shop"}>

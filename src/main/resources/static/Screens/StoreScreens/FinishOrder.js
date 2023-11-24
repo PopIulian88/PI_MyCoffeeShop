@@ -5,8 +5,40 @@ import {DARK_GREEN, MY_RED} from "../../Help_Box/Colors";
 import Spacer from "../../Components/Spacer";
 import BottomButton from "../../Components/BottomButton";
 import FinishOrderComponent from "../../Components/FinishOrderComponent";
+import {MyContext} from "../../Context/MyContext";
+import {useContext, useEffect} from "react";
 
 export default function FinishOrder({navigation}) {
+
+    const {tableToEdit, setTableToEdit} = useContext(MyContext);
+
+    // console.log(tableToEdit.cart[0].name);
+
+    // console.log(tableToEdit.products_quantiti[0]);
+
+
+
+    const renderDynamicFinishOrder = () => {
+        return (tableToEdit.cart).map((item, index) => {
+            return (
+                <FinishOrderComponent
+                    key={item.id}
+                    data={item}
+
+                    myIndex={index}
+                    name={item.name}
+                    price={item.price}
+                    amount={tableToEdit.products_quantiti[index]}
+                    // amount={1}
+
+                    photoLink={item.photoLink}
+
+                    navigation={navigation}
+                />
+            );
+        });
+    };
+
 
     return (
         <View style={finishOrder_styles.container}>
@@ -25,7 +57,7 @@ export default function FinishOrder({navigation}) {
 
                     <View style={{flexDirection: "row"}}>
                         <Text style={finishOrder_styles.title}>Finish Order</Text>
-                        <Text style={[finishOrder_styles.title, {color: DARK_GREEN}]}> #1</Text>
+                        <Text style={[finishOrder_styles.title, {color: DARK_GREEN}]}> #{tableToEdit.tableNumber}</Text>
                     </View>
                     <Image source={require("../../Poze/Logo.png")} style={finishOrder_styles.logo}/>
                 </View>
@@ -36,11 +68,16 @@ export default function FinishOrder({navigation}) {
             </View>
 
             <ScrollView style={finishOrder_styles.containerScrollView} contentContainerStyle={{alignItems: "center"}} >
-
+                {renderDynamicFinishOrder()}
             </ScrollView>
 
-            <BottomButton text="Place order" navigation={navigation} navTo={"Shop"}/>
+            {
+                tableToEdit.products_quantiti[0] ?
+                <BottomButton text="Place order" navigation={navigation} navTo={"Shop"}/>
+                    :
+                    <BottomButton text="NOT DONE" navigation={navigation} navTo={"Shop"}/>
 
+            }
         </View>
     );
 

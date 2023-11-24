@@ -7,22 +7,60 @@ import {useContext, useEffect, useState} from "react";
 import {editMenu_styles} from "../../Style/Admin_style/EditMenu_styles";
 import {Dropdown} from "react-native-element-dropdown";
 import IngredientTag from "../../Components/IngredientTag";
+import {MyContext} from "../../Context/MyContext";
+import {fetchDataDeleteProduct, fetchDataGetProducts, fetchDataGetStocks} from "../../Help_Box/API_calls";
 
 
 export default function EditMenu({navigation}) {
 
-    const [name, onChangeName] = useState('');
-    const [descripsion, onChangeDescripsion] = useState('');
-    const [price, onChangePrice] = useState(0);
-    const [photoLink, onChangePhotoLink] = useState('');
+    const {stocksData, setStocksData} = useContext(MyContext);
+
+    const {productToEdit, setProductToEdit} = useContext(MyContext);
+    const {productData, setProductData} = useContext(MyContext);
+
+
+    const [name, onChangeName] = useState(productToEdit.name);
+    const [descripsion, onChangeDescripsion] = useState(productToEdit.description);
+    const [price, onChangePrice] = useState(productToEdit.price.toString());
+    const [photoLink, onChangePhotoLink] = useState(productToEdit.photoLink);
 
     const [incredient, setIncredient] = useState(null);
     const [incredient_qantiti, onChangeIncredient_Qantiti] = useState('');
 
-    const [incredients, setIncredients] = useState([]);
-    const [quantitis, setQuantitis] = useState([])
+    const [incredients, setIncredients] = useState(productToEdit.incredients);
+    const [quantitis, setQuantitis] = useState(productToEdit.incredients_quantiti)
 
     const [isFocus, setIsFocus] = useState(false);
+
+
+    const renderDynamicIngredient = () => {
+        return incredients.map((item, index) => {
+            return (
+                <View key={item.id}>
+                    <IngredientTag
+                        key={item.id}
+                        data={item}
+
+                        setIncredients={setIncredients}
+                        incredients={incredients}
+                        setQuantitis={setQuantitis}
+                        quantitis={quantitis}
+                        indexIngredient={index}
+                        text={item.name}
+                        cantiti={quantitis[index]}
+                    />
+                    <Spacer height={5}/>
+                </View>
+            );
+        });
+    };
+
+    useEffect(() => {
+        fetchDataGetStocks().then(respons => {
+            setStocksData(respons)
+        })
+        // console.log(stocksData);
+    }, [])
 
     return (
         <View style={editMenu_styles.container}>
@@ -41,7 +79,16 @@ export default function EditMenu({navigation}) {
                 <Text style={editMenu_styles.textHeader}>Edit Product</Text>
 
                 <TouchableOpacity onPress={() => {
-                    navigation.goBack();
+                    // console.log(productToEdit);
+                    fetchDataDeleteProduct(productToEdit.id).then(r => {
+
+                        fetchDataGetProducts().then(respons => {
+                            setProductData(respons)
+                        })
+
+                        navigation.goBack();
+                    });
+
                 }}>
                     <MaterialCommunityIcons
                         name="delete"
@@ -106,7 +153,7 @@ export default function EditMenu({navigation}) {
 
                     <Dropdown
                         style={editMenu_styles.inputBox}
-                        data={[]}
+                        data={stocksData}
                         search
                         placeholderStyle={editMenu_styles.placeholderStyle}
                         selectedTextStyle={editMenu_styles.selectedTextStyle}
@@ -179,6 +226,7 @@ export default function EditMenu({navigation}) {
                     <Spacer height={5}/>
 
                     <View style={{flexDirection: "row", flexWrap: "wrap"}}>
+                        {renderDynamicIngredient()}
 
                     </View>
                 </View>
@@ -186,8 +234,21 @@ export default function EditMenu({navigation}) {
                 <Spacer/>
             </ScrollView>
 
-            <BottomButton text={"NOT DONE"} navigation={navigation} navTo={"BACK"} action={"PRODUCT"}/>
-
+            {
+                (name === '' || descripsion === '' || price === '' || incredients.length === 0) ?
+                    <BottomButton text={"NOT DONE"} navigation={navigation} navTo={"BACK"} action={"PRODUCT"}/>
+                    :
+                    <BottomButton text={"SAVE"} navigation={navigation} navTo={"BACK"} action={"PRODUCT"}
+                                  stockData={{
+                                      "id": productToEdit.id,
+                                      "name": name,
+                                      "description": descripsion,
+                                      "price": parseFloat(price),
+                                      "incredients": incredients,
+                                      "incredients_quantiti": quantitis,
+                                      "photoLink": photoLink
+                                  }}/>
+            }
         </View>
     );
 

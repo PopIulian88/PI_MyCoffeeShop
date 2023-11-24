@@ -6,6 +6,13 @@ import Spacer from "../../Components/Spacer";
 import {useContext, useEffect, useState} from "react";
 import {addProduct_styles} from "../../Style/Admin_style/AddProduct_styles";
 import {Dropdown} from "react-native-element-dropdown";
+import IngredientTag from "../../Components/IngredientTag";
+import {MY_IP} from "../../Help_Box/IP_help";
+import {MyContext} from "../../Context/MyContext";
+import {fetchDataGetStocks} from "../../Help_Box/API_calls";
+
+
+
 
 export default function AddProduct({navigation}) {
 
@@ -21,6 +28,38 @@ export default function AddProduct({navigation}) {
     const [quantitis, setQuantitis] = useState([])
 
     const [isFocus, setIsFocus] = useState(false);
+
+    const {stocksData, setStocksData} = useContext(MyContext);
+
+
+    const renderDynamicIngredient = () => {
+        return incredients.map((item, index) => {
+            return (
+                <>
+                <IngredientTag
+                    key={item.id}
+                    data={item}
+
+                    setIncredients={setIncredients}
+                    incredients={incredients}
+                    setQuantitis={setQuantitis}
+                    quantitis={quantitis}
+                    indexIngredient={index}
+                    text={item.name}
+                    cantiti={quantitis[index]}
+                />
+                <Spacer height={5}/>
+                </>
+            );
+        });
+    };
+
+    useEffect(() => {
+        fetchDataGetStocks().then(respons => {
+            setStocksData(respons)
+        })
+        // console.log(stocksData);
+    }, [])
 
     return (
         <View style={addProduct_styles.container}>
@@ -95,7 +134,7 @@ export default function AddProduct({navigation}) {
 
                     <Dropdown
                         style={addProduct_styles.inputBox}
-                        data={[]}
+                        data={stocksData}
                         search
                         placeholderStyle={addProduct_styles.placeholderStyle}
                         selectedTextStyle={addProduct_styles.selectedTextStyle}
@@ -168,6 +207,7 @@ export default function AddProduct({navigation}) {
                     <Spacer height={5}/>
 
                     <View style={{flexDirection: "row", flexWrap: "wrap"}}>
+                        {renderDynamicIngredient()}
 
                     </View>
                 </View>

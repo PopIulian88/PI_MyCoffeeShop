@@ -4,8 +4,32 @@ import {shop_styles} from "../../Style/Store_style/Shop_styles";
 import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {MY_RED} from "../../Help_Box/Colors";
 import TableComponent from "../../Components/TableComponent";
+import {useContext, useEffect, useState} from "react";
+import {MyContext} from "../../Context/MyContext";
+import {fetchDataGetProfit, fetchDataGetStoreTable} from "../../Help_Box/API_calls";
 
 export default function Shop({navigation}) {
+
+    const {tablesData, setTablesData} = useContext(MyContext)
+    const {tableToEdit, setTableToEdit} = useContext(MyContext);
+
+    const {profitData, setProfitData} = useContext(MyContext);
+
+
+
+    useEffect(() => {
+        fetchDataGetStoreTable().then(response => {
+            setTablesData(response);
+        })
+
+        fetchDataGetProfit().then(respons => {
+            setProfitData(respons);
+        })
+
+    }, [])
+
+
+
 
     return (
         <View style={shop_styles.container}>
@@ -29,57 +53,21 @@ export default function Shop({navigation}) {
 
             <View style={shop_styles.containerMid}>
                 <View style={shop_styles.tableLine}>
-                    <TableComponent dataTable={{
-                        "id": 1,
-                        "tableNumber": 1,
-                        "state": 0,
-                        "cart": [],
-                        "products_quantiti": []
-                    }} type={0} navigation={navigation}/>
+                    <TableComponent dataTable={tablesData[0]} type={tablesData[0].state} navigation={navigation}/>
 
-                    <TableComponent dataTable={{
-                        "id": 2,
-                        "tableNumber": 2,
-                        "state": 0,
-                        "cart": [],
-                        "products_quantiti": []
-                    }} type={1} navigation={navigation}/>
+                    <TableComponent dataTable={tablesData[1]} type={tablesData[1].state} navigation={navigation}/>
                 </View>
 
                 <View style={shop_styles.tableLine}>
-                    <TableComponent dataTable={{
-                        "id": 3,
-                        "tableNumber": 3,
-                        "state": 0,
-                        "cart": [],
-                        "products_quantiti": []
-                    }} type={1} navigation={navigation}/>
+                    <TableComponent dataTable={tablesData[2]} type={tablesData[2].state} navigation={navigation}/>
 
-                    <TableComponent dataTable={{
-                        "id": 4,
-                        "tableNumber": 4,
-                        "state": 0,
-                        "cart": [],
-                        "products_quantiti": []
-                    }} type={0} navigation={navigation}/>
+                    <TableComponent dataTable={tablesData[3]} type={tablesData[3].state} navigation={navigation}/>
                 </View>
 
                 <View style={shop_styles.tableLine}>
-                    <TableComponent dataTable={{
-                        "id": 5,
-                        "tableNumber": 5,
-                        "state": 0,
-                        "cart": [],
-                        "products_quantiti": []
-                    }} type={2} navigation={navigation}/>
+                    <TableComponent dataTable={tablesData[4]} type={tablesData[4].state} navigation={navigation}/>
 
-                    <TableComponent dataTable={{
-                        "id": 6,
-                        "tableNumber": 6,
-                        "state": 0,
-                        "cart": [],
-                        "products_quantiti": []
-                    }} type={0} navigation={navigation}/>
+                    <TableComponent dataTable={tablesData[5]} type={tablesData[5].state} navigation={navigation}/>
                 </View>
             </View>
 

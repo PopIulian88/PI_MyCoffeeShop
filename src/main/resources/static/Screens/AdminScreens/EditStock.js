@@ -5,16 +5,18 @@ import {MaterialCommunityIcons} from "@expo/vector-icons";
 import {MY_RED} from "../../Help_Box/Colors";
 import Spacer from "../../Components/Spacer";
 import {useContext, useState} from "react";
+import {MyContext} from "../../Context/MyContext";
 
 export default function EditStock({navigation}) {
 
+    const {stockToEdit, setStockToEdit} = useContext(MyContext);
 
 
-    const [name, onChangeName] = useState('');
-    const [quantity, onChangeQuantity] = useState(0);
-    const [price, onChangePrice] = useState(0);
-    const [amount, onChangeAmount] = useState(0);
-    const [unit, onChangeUnit] = useState("kg");
+    const [name, onChangeName] = useState(stockToEdit.name);
+    const [quantity, onChangeQuantity] = useState(stockToEdit.quantity.toString());
+    const [price, onChangePrice] = useState(stockToEdit.price.toString());
+    const [amount, onChangeAmount] = useState(stockToEdit.amount.toString());
+    const [unit, onChangeUnit] = useState(stockToEdit.unit);
 
 
     return (
@@ -101,8 +103,20 @@ export default function EditStock({navigation}) {
                 <Spacer/>
             </ScrollView>
 
-            <BottomButton text={"NOT DONE"} navigation={navigation} navTo={"BACK"} action={"STOCK"}/>
-
+            {
+                (name === '' || quantity === '' || price === '' || amount === '' || unit === '') ?
+                <BottomButton text={"NOT DONE"} navigation={navigation} navTo={"BACK"} action={"STOCK"}/>
+                :
+                <BottomButton text={"SAVE"} navigation={navigation} navTo={"BACK"} action={"STOCK"}
+                              stockData={{
+                                  "id": stockToEdit.id,
+                                  "name": name,
+                                  "quantity": quantity,
+                                  "price": price,
+                                  "amount": amount,
+                                  "unit": unit
+                              }}/>
+            }
         </View>
     );
 
