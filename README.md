@@ -20,11 +20,6 @@ Idea pentru aceasta aplicatie mi-a venit cand am vazut o cafenea nou descisa, in
 * Conectam backend-ul cu frontend-ul
 * Rezolvarea bugurilor
 
-## Arhitectura
-Lorem ipsum ...
-
-![Alt text](documentatie-ghid-utlizare-raport/diagrama-clase.png)
-
 ## Functionalitati/Exemple utilizare
 * Crearea de stock-uri
       - Sortare stock dupa cantitate
