@@ -18,7 +18,12 @@ export default function StockComponent({data, name="Name", price=0, amount=1, un
                 </View>
 
                 <View style={stockComponent_styles.rightCard}>
-                    <Text style={stockComponent_styles.title}>{quantity} {unit}</Text>
+                    {
+                        quantity < 10 ?
+                            <Text style={[stockComponent_styles.title, {color: "red"}]}>{quantity} {unit}</Text>
+                            :
+                            <Text style={stockComponent_styles.title}>{quantity} {unit}</Text>
+                    }
                 </View>
             </View>
 

@@ -41,7 +41,6 @@ export default function LilButton({data, text = "null", color = "black", navigat
             } else {
                 if (action === "STOCK") {
                     fetchDataDeleteStocks(data.id).then(r => {
-                        // console.log("SUCCES DELETE STOCK");
 
                         fetchDataGetStocks().then(respons => {
                             setStocksData(respons)
@@ -52,11 +51,30 @@ export default function LilButton({data, text = "null", color = "black", navigat
                         })
 
                     }).catch(e => {
-                        // console.log(e);
+                        console.log(e);
                     });
                 } else if (action === "ORDER") {
 
-                    alert("You have to buy the Pass for this features");
+                    const updatedFinishOrderProducts = (tableToEdit.cart).filter((item, index) => index !== myIndex);
+                    setFinishOrderProducts(updatedFinishOrderProducts);
+
+                    const updatedFinishOrderQuantiti = (tableToEdit.products_quantiti).filter((item, index) => index !== myIndex);
+                    setFinishOrderQuantiti(updatedFinishOrderQuantiti);
+
+                    fetchDataUpdateStoreTable(
+                        tableToEdit.id,
+                        tableToEdit.tableNumber,
+                        tableToEdit.state,
+                        updatedFinishOrderProducts,
+                        updatedFinishOrderQuantiti
+                    ).then(response => {
+                        fetchDataGetStoreTable().then(response => {
+                            setTableToEdit(response[tableToEdit.tableNumber - 1]);
+                        })
+                    });
+
+                    navigation.replace("FinishOrder");
+
                 }
             }
         }}>
@@ -98,7 +116,6 @@ export default function LilButton({data, text = "null", color = "black", navigat
                                     data.amount,
                                     data.unit
                                 ).then(r => {
-                                    // console.log("SUCCES UPDATE STOCK");
 
                                     fetchDataGetStocks().then(respons => {
                                         setStocksData(respons)
